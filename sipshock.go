@@ -19,18 +19,17 @@
 package main
 
 import (
-	"errors"
 	"flag"
 	"fmt"
-	"log"
 	"net"
+	"os"
 	"sync"
 	"time"
 )
 
 var (
 	lhost = flag.String("lhost", "", "Listening address")
-	lport = flag.String("lport", "10111", "Local server port")
+	lport = flag.String("lport", "10111", "Local listening port")
 	rport = flag.String("rport", "5060", "Remote port")
 )
 
@@ -40,7 +39,8 @@ func main() {
 	if net.ParseIP(*lhost) == nil {
 		*lhost, err = localIP()
 		if err != nil {
-			log.Fatalln(err)
+			fmt.Println(err)
+			os.Exit(1)
 		}
 	}
 	go scanListener(*lhost, *lport)
@@ -54,7 +54,7 @@ func main() {
 	}
 	wg.Wait()
 	time.Sleep(2 * time.Second)
-	log.Println("Done scanning")
+	fmt.Println("Done scanning")
 }
 
 // Scan SIP proxy by sending a SIP INVITE
@@ -65,10 +65,10 @@ func sipScanner(raddress, rport, laddress, lport string, wg *sync.WaitGroup) {
 	conn, err := net.Dial("udp", host)
 	defer conn.Close()
 	if err != nil {
-		log.Println(err)
+		fmt.Println(err)
 		return
 	}
-	log.Printf("Scanning: %v\n", host)
+	fmt.Printf("Scanning: %v\n", host)
 	conn.Write([]byte(invite))
 }
 
@@ -77,16 +77,17 @@ func scanListener(address, port string) {
 	myHost := net.JoinHostPort(address, port)
 	listener, err := net.Listen("tcp", myHost)
 	if err != nil {
-		log.Fatalln(err)
+		fmt.Println(err)
+		os.Exit(1)
 	}
 	defer listener.Close()
-	log.Printf("Listening at: %v\n", myHost)
+	fmt.Printf("Listening at: %v\n", myHost)
 	for {
 		conn, err := listener.Accept()
 		if err != nil {
 			continue
 		}
-		log.Printf("Vulnerable host found: %v\n", conn.RemoteAddr())
+		fmt.Printf("Vulnerable host found: %v\n", conn.RemoteAddr())
 		conn.Close()
 	}
 
@@ -140,5 +141,5 @@ func localIP() (string, error) {
 		}
 		return ipnet.IP.String(), nil
 	}
-	return "", errors.New("cannot determine local IP address")
+	return "", fmt.Errorf("cannot determine local IP address")
 }
