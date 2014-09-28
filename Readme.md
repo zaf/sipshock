@@ -10,10 +10,10 @@ sipshock [ Flags ] [ IP Addresses ]
 - rport  : Remote port (default 5060)
 
 The exec module in Kamailio, Opensips and propably every other SER fork
-passes the received SIP headers as environment viarables to the invoking shell.
+passes the received SIP headers as environment variables to the invoking shell.
 This makes these SIP proxies vulnerable to CVE-2014-6271 (Bash Shellshock).
 If a proxy is using any of the exec funtions and has the 'setvars' parameter set to the default value '1'
-then by sending SIP message containing a specially crafted header we can run arbitrary code on the
+then by sending SIP messages containing a specially crafted header we can run arbitrary code on the
 proxy machine.
 
 Sipshock tries to detect such vulnerable proxies by sending SIP INVITE Messages
