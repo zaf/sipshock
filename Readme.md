@@ -5,7 +5,7 @@
 sipshock [ Flags ] [ IP Addresses ]
 
 #### Usage flags:
-- listen : Local listening address
+- lhost : Local listening address
 - lport  : Local listening port (default 10111)
 - rport  : Remote port (default 5060)
 
