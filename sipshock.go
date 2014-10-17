@@ -62,11 +62,11 @@ func sipScanner(raddress, rport, laddress, lport string, wg *sync.WaitGroup) {
 	invite := buildInv(raddress, rport, laddress, lport)
 	host := net.JoinHostPort(raddress, rport)
 	conn, err := net.Dial("udp", host)
-	defer conn.Close()
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
+	defer conn.Close()
 	fmt.Printf("Scanning: %v\n", host)
 	conn.Write([]byte(invite))
 }
